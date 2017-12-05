@@ -1,8 +1,6 @@
-package com.em248.config;
+package com.em248.bosh.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * Created by Administrator on 2017/12/5.
@@ -13,16 +11,16 @@ import javax.validation.constraints.NotNull;
 public class BoshProperties {
 
 
-    @NotNull
+
     private String host;
 
-    @NotNull
+
     private String port;
 
-    @NotNull
+
     private String username;
 
-    @NotNull
+
     private String password;
 
 

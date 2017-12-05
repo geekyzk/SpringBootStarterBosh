@@ -1,4 +1,4 @@
-package com.em248;
+package com.em248.bosh;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
