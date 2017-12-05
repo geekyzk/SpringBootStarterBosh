@@ -10,8 +10,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 )
 public class BoshProperties {
 
-
-
     private String host;
 
 
