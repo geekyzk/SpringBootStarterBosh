@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 
 /**
@@ -23,12 +24,13 @@ public class BoshClient {
 
     private Logger log = LoggerFactory.getLogger(getClass());
     private BoshAutoConfiguration boshConfig;
+
+    @Resource(name = "boshHttpClient")
     private CloseableHttpClient httpClient;
 
     @Autowired
-    public BoshClient(BoshAutoConfiguration boshConfig,CloseableHttpClient httpClient) {
+    public BoshClient(BoshAutoConfiguration boshConfig) {
         this.boshConfig = boshConfig;
-        this.httpClient = httpClient;
     }
 
     public JSONArray getJSONArray(String url) throws IOException{

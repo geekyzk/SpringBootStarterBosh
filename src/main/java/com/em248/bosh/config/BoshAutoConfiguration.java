@@ -83,7 +83,7 @@ public class BoshAutoConfiguration {
             value = "basicAuth",
             havingValue = "true"
     )
-    @Bean
+    @Bean("boshHttpClient")
     public CloseableHttpClient defaultHttpClient(PoolingHttpClientConnectionManager p,HttpResponseInterceptor responseInterceptor) {
         CloseableHttpClient closeableHttpClient = HttpClients.custom().addInterceptorLast(responseInterceptor)
                 .setConnectionManager(p)
@@ -97,7 +97,7 @@ public class BoshAutoConfiguration {
             value = "basicAuth",
             havingValue = "false"
     )
-    @Bean
+    @Bean("boshHttpClient")
     public CloseableHttpClient uaaHttpClient(PoolingHttpClientConnectionManager p,
                                              HttpResponseInterceptor responseInterceptor,
                                              HttpRequestInterceptor requestInterceptor) {
