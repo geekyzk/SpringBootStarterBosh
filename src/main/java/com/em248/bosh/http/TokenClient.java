@@ -28,8 +28,9 @@ public class TokenClient {
 
     /**
      * 根据用户名和密码生成口令
-     *
-     * @return
+     * @param properties Bosh配置类
+     * @return 返回Token实体类
+     * @throws Exception 请求异常时抛出
      */
     public static Token createToken(BoshProperties properties) throws Exception {
         CloseableHttpClient httpClient = HttpClients.createDefault();

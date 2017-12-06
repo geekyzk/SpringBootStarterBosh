@@ -1,29 +1,45 @@
 package com.em248.bosh.dao;
 
+import com.em248.bosh.config.BoshAutoConfiguration;
+import com.em248.bosh.entity.Stemcell;
+import com.em248.bosh.util.ObjectMapperUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Administrator on 2017/1/12.
  */
 @Repository
-public class StemcellsDao{
+@Slf4j
+public class StemcellsDao {
 
-    private BoshClient boshClient;
+
+    @Resource(name = "boshHttpClient")
+    private RestTemplate restTemplate;
+
+    private BoshAutoConfiguration boshConfig;
 
     @Autowired
-    public StemcellsDao(BoshClient boshClient) {
-        this.boshClient = boshClient;
+    public StemcellsDao(BoshAutoConfiguration boshConfig) {
+        this.boshConfig = boshConfig;
     }
 
-    public String getStemcells(){
+    public List<Stemcell> getStemcells() {
+        String respStr = restTemplate.getForObject(boshConfig.getBoshUrl() + "stemcells",
+                String.class);
+        log.info(respStr);
         try {
-            return boshClient.getString("stemcells");
+            return ObjectMapperUtil.getObjectMapper().readValue(respStr, ObjectMapperUtil.getCollectionType(List.class, Stemcell.class));
         } catch (IOException e) {
             e.printStackTrace();
+            return new ArrayList<>();
         }
-        return null;
     }
 }

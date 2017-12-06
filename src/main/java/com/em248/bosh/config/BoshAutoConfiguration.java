@@ -1,6 +1,7 @@
 package com.em248.bosh.config;
 
 import com.em248.bosh.entity.Token;
+import com.em248.bosh.http.CustomRestTemplate;
 import com.em248.bosh.http.SocketFactoryRegistry;
 import com.em248.bosh.http.TokenClient;
 import org.apache.http.*;
@@ -15,6 +16,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -60,6 +63,8 @@ public class BoshAutoConfiguration {
     }
 
 
+
+
     @ConditionalOnMissingBean
     @Bean
     public HttpResponseInterceptor getHttpResponseInterceptor() {
@@ -84,12 +89,14 @@ public class BoshAutoConfiguration {
             havingValue = "true"
     )
     @Bean("boshHttpClient")
-    public CloseableHttpClient defaultHttpClient(PoolingHttpClientConnectionManager p,HttpResponseInterceptor responseInterceptor) {
+    public RestTemplate defaultHttpClient(PoolingHttpClientConnectionManager p,HttpResponseInterceptor responseInterceptor) {
         CloseableHttpClient closeableHttpClient = HttpClients.custom().addInterceptorLast(responseInterceptor)
                 .setConnectionManager(p)
                 .build();
-        return closeableHttpClient;
+        return new CustomRestTemplate(new HttpComponentsClientHttpRequestFactory(closeableHttpClient));
     }
+
+
 
 
     @ConditionalOnProperty(
@@ -98,15 +105,15 @@ public class BoshAutoConfiguration {
             havingValue = "false"
     )
     @Bean("boshHttpClient")
-    public CloseableHttpClient uaaHttpClient(PoolingHttpClientConnectionManager p,
+    public RestTemplate uaaHttpClient(PoolingHttpClientConnectionManager p,
                                              HttpResponseInterceptor responseInterceptor,
                                              HttpRequestInterceptor requestInterceptor) {
-        CloseableHttpClient closeableHttpClient = HttpClients.custom()
+       CloseableHttpClient closeableHttpClient = HttpClients.custom()
                 .addInterceptorLast(responseInterceptor)
                 .addInterceptorFirst(requestInterceptor)
                 .setConnectionManager(p)
                 .build();
-        return closeableHttpClient;
+        return new CustomRestTemplate(new HttpComponentsClientHttpRequestFactory(closeableHttpClient));
     }
 
 

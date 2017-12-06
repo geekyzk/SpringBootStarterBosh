@@ -1,38 +1,61 @@
 package com.em248.bosh.dao;
 
+import com.em248.bosh.config.BoshAutoConfiguration;
+import com.em248.bosh.entity.Deployment;
+import com.em248.bosh.entity.SingleDeployment;
+import com.em248.bosh.util.ObjectMapperUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Administrator on 2017/1/12.
  */
 @Repository
-public class DeploymentsDao{
+@Slf4j
+public class DeploymentsDao {
 
-    private BoshClient boshClient;
+    @Resource(name = "boshHttpClient")
+    private RestTemplate restTemplate;
+
+    private BoshAutoConfiguration boshConfig;
 
     @Autowired
-    public DeploymentsDao(BoshClient boshClient) {
-        this.boshClient = boshClient;
+    public DeploymentsDao(BoshAutoConfiguration boshConfig) {
+        this.boshConfig = boshConfig;
     }
 
-    public String getAllDeployments(){
+    public List<Deployment> getAllDeployments() {
+
+        String respStr = restTemplate.getForObject(boshConfig.getBoshUrl() + "deployments",
+                String.class);
+        log.info(respStr);
         try {
-            return boshClient.getString("deployments");
+            return ObjectMapperUtil.getObjectMapper().readValue(respStr, ObjectMapperUtil.getCollectionType(List.class, Deployment.class));
         } catch (IOException e) {
             e.printStackTrace();
+            return new ArrayList<>();
         }
-        return null;
+
     }
 
-    public String getDeploymentByName(String name){
+    public SingleDeployment getDeploymentByName(String name) {
+        String respStr = restTemplate.getForObject(boshConfig.getBoshUrl() + "deployments/" + name,
+                String.class);
+        log.info(respStr);
         try {
-            return boshClient.getString("deployments/" + name);
+            return ObjectMapperUtil.getObjectMapper().readValue(respStr, SingleDeployment.class);
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
+
+
 }
